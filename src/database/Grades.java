@@ -18,63 +18,35 @@ public class Grades {
         this.fina = f;
         
         Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/student","root","");
-            PreparedStatement state = connect.prepareStatement("INSERT INTO student.grades VALUES(?,?,?,?,?,?,?,?)");
-            
-            double ave = (p + m + pf + f)/4;
-            String rem = (ave > 3.0) ? "Failed" : "Passed";
-            
-            state.setInt(1, this.s_id);
-            state.setString(2, this.sname);
-            state.setDouble(3, this.prel);
-            state.setDouble(4, this.midt);
-            state.setDouble(5, this.prefi);
-            state.setDouble(6, this.fina);
-            state.setDouble(7, ave);
-            state.setString(8, rem);
-            
-            state.executeUpdate();
-        
-        /*try {
-            Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/student","root","");
-            PreparedStatement state = connect.prepareStatement("INSERT INTO student.grades VALUES(?,?,?,?,?,?,?,?,?");
-            
-            double ave = (p + m + pf + f)/4;
-            String rem = (ave > 3.0) ? "Failed" : "Passed";
-            
-            state.setInt(1, this.s_id);
-            state.setString(2, this.sname);
-            state.setDouble(3, this.prel);
-            state.setDouble(4, this.midt);
-            state.setDouble(5, this.prefi);
-            state.setDouble(6, this.fina);
-            state.setDouble(7, ave);
-            state.setString(9, rem);
-            
-            state.executeUpdate();
-            
-        } catch(SQLException e){
-            System.out.println("Error, connecting database.");
-        }*/
-        
+        PreparedStatement state = connect.prepareStatement("INSERT INTO student.grades VALUES(?,?,?,?,?,?,?,?)");
+
+        double ave = (p + m + pf + f)/4;
+        String rem = (ave > 3.0) ? "Failed" : "Passed";
+
+        state.setInt(1, this.s_id);
+        state.setString(2, this.sname);
+        state.setDouble(3, this.prel);
+        state.setDouble(4, this.midt);
+        state.setDouble(5, this.prefi);
+        state.setDouble(6, this.fina);
+        state.setDouble(7, ave);
+        state.setString(8, rem);
+
+        state.executeUpdate();
     }
     
     public void viewGrades() throws SQLException{
         Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/student","root","");
         PreparedStatement state = connect.prepareStatement("SELECT * FROM student.grades");
         
-        Grade gr = new Grade();
-        
         ResultSet result = state.executeQuery();
         
+        double TCA = 0;
+        int passed = 0;
+        int failed = 0;
+        int s=0;
+    
         while(result.next()){
-            
-            gr.TCA += this.AVERAGE;
-        
-            if(this.AVERAGE > 3.0){
-                gr.failed++;
-            } else{
-                gr.passed++;
-            }
             
             this.s_id = result.getInt("ID");
             this.sname = result.getString("S_name");
@@ -87,13 +59,21 @@ public class Grades {
 
             System.out.printf("%-5d %-10s %-5.1f %-5.1f %-5.1f %-5.1f %-5.1f %s\n", s_id, sname, prel, midt, prefi, fina, AVERAGE, remarks);
             
-            gr.s++;
+            TCA += this.AVERAGE;
+            
+            if(this.AVERAGE > 3.0){
+                failed++;
+            } else{
+                passed++;
+            }
+            
+            s++;
         }
         
         System.out.println("\n--------------------------------------"
-                + "\nNo. of students: "+gr.s);
-        System.out.printf("Total class average: %.1f",gr.TCA/gr.s);
-        System.out.println("\nNo. of passed: "+gr.passed
-                + "\nNo. of failed: "+gr.failed);
+                + "\nNo. of students: "+s);
+        System.out.printf("Total class average: %.1f",TCA/s);
+        System.out.println("\nNo. of passed: "+passed
+                + "\nNo. of failed: "+failed);
     }
 }
