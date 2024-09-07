@@ -35,7 +35,7 @@ public class Grades {
         state.executeUpdate();
     }
     
-    public void viewGrades() throws SQLException{
+    public void viewGrades() throws SQLException {
         Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/student","root","");
         PreparedStatement state = connect.prepareStatement("SELECT * FROM student.grades");
         
